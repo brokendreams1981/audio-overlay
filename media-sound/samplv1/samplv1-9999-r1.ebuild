@@ -1,4 +1,4 @@
-# Copyright 1999-2019 Gentoo Foundation
+# Copyright 1999-2020 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
@@ -36,21 +36,26 @@ RDEPEND="
 "
 DEPEND="${RDEPEND}"
 
-PATCHES=( "${FILESDIR}"/${PN}-dont-compress-manpages.patch )
-
 src_prepare() {
 	if [[ ${PV} == *9999 ]]; then
 		eautoreconf
 	fi
-	default
-}
 
-src_configure() {
+	# Remove compression of manpages
+	sed -i -e "/@gzip.*man1/d" Makefile.in || die "sed failed"
+
 	# Disable stripping
 	echo "QMAKE_STRIP=" >> src/src_core.pri.in
 	echo "QMAKE_STRIP=" >> src/src_jack.pri.in
 	echo "QMAKE_STRIP=" >> src/src_ui.pri.in
+	echo "QMAKE_STRIP=" >> src/src_lv2.pri.in
+	sed -i -e '/strip $(TARGET)/d' src/src_jack.pro || die "sed failed"
+	sed -i -e '/strip $(TARGET)/d' src/src_lv2.pro || die "sed failed"
 
+	default
+}
+
+src_configure() {
 	local -a myeconfargs=(
 		$(use_enable debug)
 		$(use_enable standalone jack)
@@ -63,8 +68,10 @@ src_configure() {
 
 pkg_postinst() {
 	xdg_mimeinfo_database_update
+	xdg_icon_cache_update
 }
 
 pkg_postrm() {
 	xdg_mimeinfo_database_update
+	xdg_icon_cache_update
 }

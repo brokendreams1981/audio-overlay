@@ -1,24 +1,27 @@
-# Copyright 1999-2019 Gentoo Foundation
+# Copyright 1999-2020 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
-EAPI=6
+EAPI=7
 
-inherit git-r3 cmake-utils
+inherit cmake flag-o-matic
 
 DESCRIPTION="Third party plugins for SuperCollider"
 HOMEPAGE="https://github.com/supercollider/sc3-plugins"
-EGIT_REPO_URI="https://github.com/supercollider/sc3-plugins.git"
 if [[ ${PV} == *9999 ]]; then
+	inherit git-r3
+	EGIT_REPO_URI="https://github.com/supercollider/sc3-plugins.git"
 	KEYWORDS=""
 else
-	EGIT_COMMIT="Version-${PV}"
+	SRC_URI="https://github.com/supercollider/sc3-plugins/releases/download/Version-${PV}/sc3-plugins-${PV}-Source.tar.bz2 -> ${P}.tar.bz2"
 	KEYWORDS="~amd64"
+	RESTRICT="mirror"
+	S="${WORKDIR}/${P}-Source"
 fi
 LICENSE="GPL-2"
 SLOT="0"
-
-IUSE=""
 RESTRICT="mirror"
+
+IUSE="debug"
 
 RDEPEND="
 	media-sound/supercollider
@@ -29,9 +32,10 @@ DEPEND="${RDEPEND}
 src_configure() {
 	local mycmakeargs=(
 		-DSC_PATH=/usr/include/SuperCollider
-		-DAY=ON
 		-DSUPERNOVA=ON
 	)
 
-	cmake-utils_src_configure
+	append-flags $(usex debug '' -DNDEBUG)
+
+	cmake_src_configure
 }

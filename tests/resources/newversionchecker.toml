@@ -3,13 +3,16 @@ check_interval = 24
 
 [projects]
 artyfx = "https://github.com/openAVproductions/openAV-ArtyFX"
+bitrot = "https://github.com/grejppi/bitrot"
 cadence = "https://github.com/falkTX/Cadence"
 carla = "https://github.com/falkTX/Carla"
 deteriorate-lv2 = "https://github.com/blablack/deteriorate-lv2"
 drumkv1 = "https://github.com/rncbc/drumkv1"
 ladish = "https://github.com/LADI/ladish"
 libmonome = "https://github.com/monome/libmonome"
+luppp = "https://github.com/openAVproductions/openAV-Luppp"
 mididings = "https://github.com/dsacre/mididings"
+new-session-manager = "https://github.com/linuxaudio/new-session-manager"
 ntk = "https://github.com/original-male/ntk"
 padthv1 = "https://github.com/rncbc/padthv1"
 pure-data = "https://github.com/pure-data/pure-data"

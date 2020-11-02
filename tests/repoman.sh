@@ -1,6 +1,13 @@
 #!/usr/bin/env bash
-# Run "repoman full" against the entire overlay
-set -ex
+# Run repoman in a clean amd64 stage3
+# Pass package names to only run against these packages, otherwise runs agains the whole overlay
+set -e
+
+if [ "${DEBUG}" = True ]; then
+  set -x
+fi
+
+SCRIPT_PATH=$(dirname "$0")
 
 # Create volume container named "portage" with today's gentoo tree in it
 # Ensure the portage image is up to date
@@ -21,9 +28,10 @@ docker run --rm -ti \
   -e CIRCLE_PROJECT_REPONAME \
   -e CIRCLE_PULL_REQUEST \
   -e CIRCLE_PR_NUMBER \
+  -e DEBUG \
   --volumes-from portage \
-  -v "${HOME}/.portage-pkgdir":/usr/portage/packages \
+  -v "${HOME}/.portage-pkgdir":/var/cache/binpkgs \
   -v "${PWD}":/usr/local/portage \
   -w /usr/local/portage \
   gentoo/stage3-amd64 \
-  /usr/local/portage/tests/resources/repoman.sh
+  /usr/local/portage/tests/resources/repoman.sh "${@}"

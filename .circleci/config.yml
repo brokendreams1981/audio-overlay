@@ -6,24 +6,24 @@ jobs:
     steps:
       - checkout
       - run: ./tests/newversioncheck.sh
-  emerge random ebuild:
+  emerge all ebuilds:
     machine: true
     steps:
       - checkout
       - restore_cache:
           key: portage-pkgdir-emerge
-      - run: ./tests/emerge-random-ebuild.sh
+      - run: ./tests/emerge-all-ebuilds.sh
       - save_cache:
           key: portage-pkgdir-emerge-{{ epoch }}
           paths:
             - ~/.portage-pkgdir
-  emerge random live ebuild:
+  emerge all live ebuilds:
     machine: true
     steps:
       - checkout
       - restore_cache:
           key: portage-pkgdir-emerge
-      - run: ./tests/emerge-random-live-ebuild.sh
+      - run: ./tests/emerge-all-live-ebuilds.sh
       - save_cache:
           key: portage-pkgdir-emerge-{{ epoch }}
           paths:
@@ -35,6 +35,17 @@ jobs:
       - restore_cache:
           key: portage-pkgdir-repoman
       - run: ./tests/repoman.sh
+      - save_cache:
+          key: portage-pkgdir-repoman-{{ epoch }}
+          paths:
+            - ~/.portage-pkgdir
+  repoman new or changed ebuilds:
+    machine: true
+    steps:
+      - checkout
+      - restore_cache:
+          key: portage-pkgdir-repoman
+      - run: ./tests/repoman-new-or-changed-ebuilds.sh
       - save_cache:
           key: portage-pkgdir-repoman-{{ epoch }}
           paths:
@@ -80,19 +91,22 @@ workflows:
                - master
     jobs:
       - check new versions
-      - emerge random ebuild
-      - emerge random live ebuild:
+      - repoman
+      - emerge all ebuilds:
           requires:
-            - emerge random ebuild
+            - repoman
+      - emerge all live ebuilds:
+          requires:
+            - emerge all ebuilds
   pullrequest:
     jobs:
-      - repoman:
+      - repoman new or changed ebuilds:
           filters:
             branches:
               ignore: master
       - emerge new or changed ebuilds:
           requires:
-            - repoman
+            - repoman new or changed ebuilds
           filters:
             branches:
               ignore: master

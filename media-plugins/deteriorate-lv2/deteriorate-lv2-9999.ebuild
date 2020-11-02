@@ -1,16 +1,16 @@
-# Copyright 1999-2018 Gentoo Foundation
+# Copyright 1999-2020 Gentoo Authors
 # Distributed under the terms of the GNU General Public License v2
 
 EAPI=6
 
 # Required by waf
-PYTHON_COMPAT=( python2_7 python3_4 python3_5 python3_6 )
+PYTHON_COMPAT=( python3_4 python3_5 python3_6 python3_7 )
 PYTHON_REQ_USE='threads(+)'
 
 inherit python-any-r1 waf-utils
 
 DESCRIPTION="A set of plugins to deteriorate the sound quality"
-HOMEPAGE="https://objectivewave.wordpress.com/deteriorate-lv2"
+HOMEPAGE="https://github.com/blablack/deteriorate-lv2"
 if [[ ${PV} == *9999 ]]; then
 	inherit git-r3
 	EGIT_REPO_URI="https://github.com/blablack/deteriorate-lv2.git"

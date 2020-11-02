@@ -1,13 +1,15 @@
 #!/usr/bin/env bash
 # Emerge a specific ebuild in a clean amd64 stage3
-set -ex
+set -e
 
-if [ "$#" -ne 1 ]; then
-  echo "Usage: $0 <package category>/<package name>/<package name and version>.ebuild" >&2
-  exit 1
+if [ "${DEBUG}" = True ]; then
+  set -x
 fi
 
-EBUILD="${1}"
+if [ "$#" -eq 0 ]; then
+  echo "Usage: $0 <ebuild category>/<ebuild name>/<ebuild filename>.ebuild [<second ebuild category>/<second ebuild name>/<second ebuild filename>.ebuild]" >&2
+  exit 1
+fi
 
 # Create volume container named "portage" with today's gentoo tree in it
 # Ensure the portage image is up to date
@@ -24,8 +26,8 @@ docker pull gentoo/stage3-amd64
 docker run --rm -ti \
   --cap-add=SYS_PTRACE \
   --volumes-from portage \
-  -v "${HOME}/.portage-pkgdir":/usr/portage/packages \
+  -v "${HOME}/.portage-pkgdir":/var/cache/binpkgs \
   -v "${PWD}":/usr/local/portage \
   -w /usr/local/portage \
   gentoo/stage3-amd64 \
-  /usr/local/portage/tests/resources/emerge-ebuild.sh "${EBUILD}"
+  /usr/local/portage/tests/resources/emerge-ebuild.sh "${@}"
